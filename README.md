@@ -20,6 +20,40 @@ Interview Guru is a modern, voice-interactive web application that simulates a r
   - **Behavioral & Technical** assessment.
 - **🎨 Premium UI**: Glassmorphism design, dark mode, and fluid animations for a stress-free environment.
 
+
+## 🔄 Architecture & Workflow
+
+Here is the high-level logic flow of the Interview Guru application:
+
+```mermaid
+graph TD
+    A[Start Application] --> B(Landing Page)
+    B --> C{Upload Resume}
+    C -->|PDF / TXT| D[Parse Text Locally]
+    B --> E{Select AI Provider}
+    E -->|Gemini / OpenAI| F[Store API Key]
+    
+    D --> G[Start Interview]
+    F --> G
+    
+    G --> H[AI: Asks Question]
+    H --> I[User: Speaks Answer]
+    I -->|Web Speech API| J[Text Transcript]
+    J -->|Live Captions| K[UI Display]
+    J --> L{Interview Done?}
+    
+    L -->|No| H
+    L -->|Yes| M[End Session]
+    
+    M --> N[Compile Full Transcript]
+    N -->|Sending Prompts| O[AI Cloud (Gemini/GPT-4)]
+    O -->|Analysis| P[Generate Report]
+    
+    P --> Q[Final Score (0-100)]
+    P --> R[Hiring Recommendation]
+    P --> S[Strengths & Improvements]
+```
+
 ## 🚀 Getting Started
 
 No installation or complex build steps required. This is a pure standard web application.
