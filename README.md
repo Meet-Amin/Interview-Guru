@@ -36,8 +36,8 @@ graph TD
     D --> G[Start Interview]
     F --> G
     
-    G --> H[AI: Asks Question]
-    H --> I[User: Speaks Answer]
+    G --> H["AI: Asks Question"]
+    H --> I["User: Speaks Answer"]
     I -->|Web Speech API| J[Text Transcript]
     J -->|Live Captions| K[UI Display]
     J --> L{Interview Done?}
@@ -46,10 +46,10 @@ graph TD
     L -->|Yes| M[End Session]
     
     M --> N[Compile Full Transcript]
-    N -->|Sending Prompts| O[AI Cloud (Gemini/GPT-4)]
+    N -->|Sending Prompts| O["AI Cloud (Gemini/GPT-4)"]
     O -->|Analysis| P[Generate Report]
     
-    P --> Q[Final Score (0-100)]
+    P --> Q["Final Score (0-100)"]
     P --> R[Hiring Recommendation]
     P --> S[Strengths & Improvements]
 ```
