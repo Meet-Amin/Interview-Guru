@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Guru</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-glob"></div>
+    <div class="background-glob glob-2"></div>
+    <div class="background-grid"></div>
+
+    <main id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">
+                <span class="logo-icon">IG</span>
+                Interview Guru
+            </div>
+            <!-- <div class="settings-trigger" id="settingsParams">
+                <span class="material-icons-round">settings</span>
+            </div> -->
+        </nav>
+
+        <!-- VIEW 1: LANDING & UPLOAD -->
+        <section id="view-landing" class="view active">
+            <div class="hero-content">
+                <h1>Master Your <br><span class="gradient-text">Next Interview</span></h1>
+                <p class="subtitle">Upload your resume. Our AI agent will conduct a realistic voice interview and
+                    provide actionable feedback.</p>
+
+                <div class="upload-container" id="drop-zone">
+                    <input type="file" id="resume-upload" accept=".pdf,.txt" hidden>
+                    <div class="upload-content">
+                        <span class="material-icons-round icon-xl">cloud_upload</span>
+                        <h3>Drop your resume here</h3>
+                        <p>Supports PDF or TXT</p>
+                        <button class="btn btn-primary" type="button">Browse Files</button>
+                    </div>
+                </div>
+
+                <div class="api-key-section" style="margin-bottom: 2rem; width: 100%; max-width: 400px;">
+                    <label
+                        style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">AI
+                        Configuration</label>
+
+                    <select id="ai-provider"
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; outline: none; font-family: inherit; margin-bottom: 0.5rem;">
+                        <option value="gemini">Google Gemini</option>
+                        <option value="openai">OpenAI (GPT-4)</option>
+                    </select>
+
+                    <input type="password" id="api-key-input" placeholder="Enter API Key..."
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; outline: none; font-family: inherit;">
+                    <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.5rem;">Run
+                        locally with your own key.</small>
+                </div>
+
+                <div id="file-preview" class="file-preview hidden">
+                    <div class="file-info">
+                        <span class="material-icons-round">description</span>
+                        <span id="filename">resume.pdf</span>
+                    </div>
+                    <button class="btn-icon" id="remove-file">
+                        <span class="material-icons-round">close</span>
+                    </button>
+                </div>
+
+                <div class="actions">
+                    <button id="start-btn" class="btn btn-large btn-glow" disabled>Start Interview</button>
+                </div>
+
+                <p class="disclaimer">No API key required. Uses Mock Mode by default.</p>
+            </div>
+        </section>
+
+        <!-- VIEW 2: INTERVIEW -->
+        <section id="view-interview" class="view hidden">
+            <div class="interview-layout">
+                <div class="visualizer-container">
+                    <div class="avatar-ring">
+                        <div class="avatar-core"></div>
+                        <div class="wave w1"></div>
+                        <div class="wave w2"></div>
+                        <div class="wave w3"></div>
+                    </div>
+                    <div class="status-indicator">
+                        <span id="status-text">AI is listening...</span>
+                        <div id="live-caption" class="caption-text hidden"></div>
+                    </div>
+                </div>
+
+                <div class="chat-area" id="chat-feed">
+                    <!-- Messages will be injected here -->
+                    <div class="message ai-message">
+                        <p>Hello! I've reviewed your resume. I see you have experience with React. Can you tell me about
+                            a challenging problem you solved recently?</p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="mic-toggle" class="btn-control active">
+                        <span class="material-icons-round">mic</span>
+                    </button>
+                    <button id="end-interview-btn" class="btn-control danger">
+                        <span class="material-icons-round">call_end</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: REPORT -->
+        <section id="view-report" class="view hidden">
+            <div class="report-container">
+                <div class="score-card">
+                    <svg class="progress-ring" width="120" height="120">
+                        <circle class="progress-ring__circle" stroke="white" stroke-width="8" fill="transparent" r="52"
+                            cx="60" cy="60" />
+                    </svg>
+                    <div class="score-text">
+                        <span id="final-score">85</span>
+                        <small>HIRE</small>
+                    </div>
+                </div>
+
+                <h2>Interview Report</h2>
+
+                <div class="feedback-section">
+                    <h3>Summary</h3>
+                    <p id="report-summary">The candidate showed strong technical knowledge but lacked confidence in
+                        system design questions.</p>
+                </div>
+
+                <div class="feedback-grid">
+                    <div class="card glass">
+                        <h4>Strengths</h4>
+                        <ul id="list-strengths">
+                            <!-- Items -->
+                        </ul>
+                    </div>
+                    <div class="card glass">
+                        <h4>Improvements</h4>
+                        <ul id="list-improvements">
+                            <!-- Items -->
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="window.location.reload()">Start New Interview</button>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>
