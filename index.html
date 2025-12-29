@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interview Guru</title>
+    <link rel="icon" type="image/png" href="images/guru_avatar.png">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +28,8 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="logo">
-                <span class="logo-icon">IG</span>
+                <img src="images/guru_avatar.png" alt="IG"
+                    style="width: 32px; height: 32px; margin-right: 0.5rem; mix-blend-mode: screen; filter: drop-shadow(0 0 2px var(--primary));">
                 Interview Guru
             </div>
             <!-- <div class="settings-trigger" id="settingsParams">
@@ -35,12 +37,57 @@
             </div> -->
         </nav>
 
-        <!-- VIEW 1: LANDING & UPLOAD -->
-        <section id="view-landing" class="view active">
-            <div class="hero-content">
-                <h1>Master Your <br><span class="gradient-text">Next Interview</span></h1>
-                <p class="subtitle">Upload your resume. Our AI agent will conduct a realistic voice interview and
-                    provide actionable feedback.</p>
+        <!-- VIEW 0: WELCOME -->
+        <section id="view-welcome" class="view active" style="position: relative; overflow: hidden;">
+            <canvas id="welcome-canvas"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
+            <div class="hero-content"
+                style="height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1;">
+
+                <!-- AI Guru Visual -->
+                <div class="guru-avatar-container">
+                    <img src="images/guru_avatar.png" alt="AI Interview Guru" class="guru-image">
+                </div>
+
+                <h1
+                    style="height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 2rem; overflow: hidden;">
+                    <div style="flex-shrink: 0;">Master Your</div>
+                    <div style="flex-shrink: 0; height: 1.2em; display: flex; align-items: center;">
+                        <span class="gradient-text" id="typewriter-text"
+                            style="line-height: 1.2; padding-bottom: 0.1em;"></span>
+                        <span class="cursor">&nbsp;</span>
+                    </div>
+                </h1>
+
+                <button id="btn-lets-go" class="btn btn-large btn-glow"
+                    style="font-size: 1.5rem; padding: 1.2rem 3rem;">Let's Go</button>
+            </div>
+        </section>
+
+        <!-- VIEW 1: SETUP -->
+        <section id="view-landing" class="view hidden">
+            <div class="hero-content" style="padding-top: 4rem;">
+                <h2 style="margin-bottom: 2rem; font-size: 2.5rem; text-align: center;">Configure Session</h2>
+
+                <div class="job-config"
+                    style="width: 100%; max-width: 600px; margin: 0 auto 2rem auto; text-align: left;">
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Target
+                            Job Role</label>
+                        <input type="text" id="job-role" placeholder="e.g. Senior Frontend Engineer"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; outline: none; font-family: inherit;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Job
+                            Description (Optional)</label>
+                        <textarea id="job-desc" rows="3"
+                            placeholder="Paste the job description here for a tailored interview..."
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; outline: none; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                </div>
 
                 <div class="upload-container" id="drop-zone">
                     <input type="file" id="resume-upload" accept=".pdf,.txt" hidden>

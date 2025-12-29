@@ -593,3 +593,113 @@ li::before {
     display: none;
 }
 
+
+/* Typewriter Cursor */
+.cursor {
+    display: inline-block;
+    width: 4px; 
+    height: 1em;
+    background-color: var(--secondary);
+    margin-left: 5px;
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+
+/* AI Hero Core */
+.ai-hero-core {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.core-inner {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at 30% 30%, #a78bfa, #7c3aed);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.6);
+    animation: corePulse 3s infinite ease-in-out;
+    z-index: 2;
+}
+
+.core-outer-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(167, 139, 250, 0.3);
+    border-top: 2px solid #a78bfa;
+    border-radius: 50%;
+    animation: spin 8s linear infinite;
+}
+
+.core-scanner {
+    position: absolute;
+    width: 140%;
+    height: 140%;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    animation: spinReverse 15s linear infinite;
+}
+
+@keyframes corePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(124, 58, 237, 0.6); }
+    50% { transform: scale(1.1); box-shadow: 0 0 50px rgba(124, 58, 237, 0.9); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes spinReverse {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(0deg); }
+}
+
+
+/* Guru Avatar */
+.guru-avatar-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: float 6s ease-in-out infinite;
+}
+
+.guru-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    z-index: 2;
+    border: 3px solid rgba(167, 139, 250, 0.5);
+    box-shadow: 0 0 50px rgba(124, 58, 237, 0.4);
+}
+
+.guru-glow {
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, transparent 70%);
+    z-index: 1;
+    animation: pulseGlow 4s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { opacity: 0.5; transform: scale(0.9); }
+    100% { opacity: 0.8; transform: scale(1.1); }
+}
+

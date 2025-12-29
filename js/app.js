@@ -1,13 +1,16 @@
 // State
 const state = {
-    view: 'landing', // landing, interview, report
+    view: 'welcome', // welcome, landing, interview, report
     resumeText: '',
     messages: [],
     isRecording: false,
     isSpeaking: false,
     questionIndex: 0,
     apiKey: '',
-    provider: 'gemini'
+    provider: 'gemini',
+    jobRole: '',
+    jobDesc: '',
+    customQuestions: []
 };
 
 // Mock Interview Questions
@@ -21,12 +24,14 @@ const QUESTIONS = [
 
 // DOM Elements
 const views = {
+    welcome: document.getElementById('view-welcome'),
     landing: document.getElementById('view-landing'),
     interview: document.getElementById('view-interview'),
     report: document.getElementById('view-report')
 };
 
 const dom = {
+    letsGoBtn: document.getElementById('btn-lets-go'),
     dropZone: document.getElementById('drop-zone'),
     fileInput: document.getElementById('resume-upload'),
     filePreview: document.getElementById('file-preview'),
@@ -43,6 +48,129 @@ const dom = {
 function init() {
     setupEventListeners();
     checkBrowserSupport();
+    initTypewriter();
+    initParticles();
+}
+
+function initParticles() {
+    const canvas = document.getElementById('welcome-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+
+    // Resize
+    const resize = () => {
+        width = canvas.width = canvas.parentElement.offsetWidth;
+        height = canvas.height = canvas.parentElement.offsetHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Particle Class
+    class Particle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 1; // Velocity
+            this.vy = (Math.random() - 0.5) * 1;
+            this.size = Math.random() * 2 + 1;
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Bounce
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+        }
+
+        draw() {
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.5)'; // Primary color
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    // Create Particles
+    for (let i = 0; i < 50; i++) particles.push(new Particle());
+
+    // Animate
+    function animate() {
+        if (state.view !== 'welcome') {
+            requestAnimationFrame(animate);
+            return; // Pause if not visible to save resources, but keep loop for when it returns? or just clear
+        }
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw connections
+        for (let i = 0; i < particles.length; i++) {
+            const p1 = particles[i];
+            p1.update();
+            p1.draw();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
+                const dx = p1.x - p2.x;
+                const dy = p1.y - p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 150) {
+                    ctx.strokeStyle = `rgba(99, 102, 241, ${1 - dist / 150})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+function initTypewriter() {
+    const textElement = document.getElementById('typewriter-text');
+    const phrases = ["Next Interview", "Dream Job", "Career Growth", "Soft Skills", "Technical Round"];
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let typeSpeed = 100;
+
+    function type() {
+        const currentPhrase = phrases[phraseIndex];
+
+        if (isDeleting) {
+            textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+            charIndex--;
+            typeSpeed = 50; // Faster deleting
+        } else {
+            textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+            charIndex++;
+            typeSpeed = 100; // Normal typing
+        }
+
+        if (!isDeleting && charIndex === currentPhrase.length) {
+            // Finished typing phrase
+            isDeleting = true;
+            typeSpeed = 2000; // Pause at end
+        } else if (isDeleting && charIndex === 0) {
+            // Finished deleting
+            isDeleting = false;
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            typeSpeed = 500; // Pause before new phrase
+        }
+
+        setTimeout(type, typeSpeed);
+    }
+
+    type();
 }
 
 function checkBrowserSupport() {
@@ -69,6 +197,7 @@ function setupEventListeners() {
     });
 
     // Navigation
+    dom.letsGoBtn.addEventListener('click', () => switchView('landing'));
     dom.startBtn.addEventListener('click', startInterview);
     dom.endBtn.addEventListener('click', endInterview);
 
@@ -147,46 +276,124 @@ function switchView(viewName) {
     }, 500);
 }
 
-function startInterview() {
+async function startInterview() {
     state.apiKey = document.getElementById('api-key-input').value.trim();
     state.provider = document.getElementById('ai-provider').value;
+    state.jobRole = document.getElementById('job-role').value;
+    state.jobDesc = document.getElementById('job-desc').value;
 
     if (state.apiKey) console.log(`Using Real AI Mode (${state.provider})`);
+
+    // Loading State
+    dom.startBtn.textContent = "Preparing Interview...";
+    dom.startBtn.disabled = true;
+
+    // Clear dynamic gen logic
 
     switchView('interview');
     state.questionIndex = 0;
     state.messages = [];
     dom.chatFeed.innerHTML = '';
 
+    // Reset Button
+    dom.startBtn.textContent = "Start Interview";
+    dom.startBtn.disabled = false;
+
     // Delay for transition then start
     setTimeout(() => {
-        askNextQuestion();
+        // Start conversation
+        generateNextInteraction(null);
     }, 1500);
 }
 
-function addMessage(text, sender) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', sender === 'ai' ? 'ai-message' : 'user-message');
-    msgDiv.textContent = text;
-    dom.chatFeed.appendChild(msgDiv);
-    dom.chatFeed.scrollTop = dom.chatFeed.scrollHeight;
+// Dynamic Interaction Loop
+async function generateNextInteraction(previousUserResponse) {
+    // If no previous response (first message), generate intro
 
-    // Only store unique messages to avoid dupes in logic if needed
-    state.messages.push({ sender, text });
-}
-
-function askNextQuestion() {
-    // Check if we are done
-    if (state.questionIndex >= QUESTIONS.length) {
+    // Check if we reached question limit (e.g. 5)
+    const aiMessageCount = state.messages.filter(m => m.sender === 'ai').length;
+    if (aiMessageCount >= 5) {
         endInterview();
         return;
     }
 
-    const question = QUESTIONS[state.questionIndex];
-    state.questionIndex++;
+    const isFirst = aiMessageCount === 0;
 
-    addMessage(question, 'ai');
-    speak(question);
+    // Optimistic UI for AI thinking
+    const thinkingId = addMessage("Thinking...", 'ai', true); // true = temporary
+    dom.statusText.textContent = "AI is thinking...";
+
+    try {
+        let questionText = "Tell me about yourself.";
+
+        if (state.apiKey) {
+            const prompt = `
+            You are a professional Interviewer. 
+            Resume: ${state.resumeText.substring(0, 1500)}
+            Role: ${state.jobRole}
+            Job Desc: ${state.jobDesc.substring(0, 500)}
+            
+            Conversation History:
+            ${state.messages.map(m => `${m.sender.toUpperCase()}: ${m.text}`).join('\n')}
+            
+            Instruction:
+            ${isFirst ? `Generate the FIRST opening question. Reference the resume directly (e.g. "I see you worked at X").` : `Based on the candidate's last answer, generate the NEXT follow-up question. Dig deeper or move to a new topic. Be conversational.`}
+            
+            Keep the question concise (under 2 sentences).
+            Return ONLY the raw question text.
+            `;
+
+            if (state.provider === 'openai') {
+                questionText = await callOpenAI(prompt);
+            } else {
+                questionText = await callGemini(prompt);
+            }
+        } else {
+            // Mock Mode Fallback
+            questionText = QUESTIONS[aiMessageCount] || "That's all the questions I have.";
+        }
+
+        // Remove thinking message
+        const thinkingEl = document.getElementById(thinkingId);
+        if (thinkingEl) thinkingEl.remove();
+
+        addMessage(questionText, 'ai');
+        speak(questionText);
+
+    } catch (e) {
+        console.error("AI Gen Failed", e);
+        // Fallback
+        const fallback = QUESTIONS[aiMessageCount] || "Tell me more.";
+        document.getElementById(thinkingId)?.remove();
+        addMessage(fallback, 'ai');
+        speak(fallback);
+    }
+}
+
+// generateDynamicQuestions removed - dynamic is now realtime
+
+function addMessage(text, sender, isTemp = false) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', sender === 'ai' ? 'ai-message' : 'user-message');
+    if (isTemp) {
+        msgDiv.id = 'msg-thinking';
+        msgDiv.classList.add('thinking');
+    }
+    msgDiv.textContent = text;
+    dom.chatFeed.appendChild(msgDiv);
+    dom.chatFeed.scrollTop = dom.chatFeed.scrollHeight;
+
+    if (!isTemp) {
+        state.messages.push({ sender, text });
+    }
+    return msgDiv.id;
+}
+
+function handleUserResponse(text) {
+    addMessage(text, 'user');
+
+    // Trigger dynamic next step
+    generateNextInteraction(text);
 }
 
 // --- Audio Handling ---
@@ -304,14 +511,8 @@ function speak(text) {
     }
 }
 
-function handleUserResponse(text) {
-    addMessage(text, 'user');
-
-    // Simulate thinking/processing
-    dom.statusText.textContent = "AI is analyzing...";
-    setTimeout(() => {
-        askNextQuestion();
-    }, 2000);
+function handleUserResponse_Deprecated(text) {
+    // Removed
 }
 
 // --- Report Generation ---
@@ -412,6 +613,9 @@ async function generateRealReport() {
     const prompt = `
     You are an expert HR interviewer. Analyze the following job interview transcript based on the candidate's resume and responses.
     
+    Role Applied For: ${state.jobRole}
+    Job Description context: ${state.jobDesc.substring(0, 500)}
+
     Transcript:
     ${transcript}
     
