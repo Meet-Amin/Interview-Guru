@@ -9,7 +9,12 @@ Interview Guru is a modern, voice-interactive web application that simulates a r
 
 ## ✨ Features
 
-- **📄 Smart Resume Parsing**: Drag & drop your PDF or TXT resume. The app analyzes it entirely in your browser to tailor questions to your experience.
+
+- **🧙‍♂️ Guru Mode**: Immersive Indian Tech Guru avatar with holographic visuals and conversational AI that feels alive.
+- **⚡ Real-Time Adaptive AI**: The interviewer reacts to your specific answers in real-time, asking relevant follow-ups instead of a static script.
+- **🎯 Job-Specific Training**: Paste a job description and role to get a tailored interview experience (e.g., "Senior React Dev").
+- **🌌 Dynamic Visuals**: Interactive particle constellations, typewriter effects, and glassmorphism UI.
+- **📄 Smart Resume Parsing**: Drag & drop your PDF or TXT resume. The app analyzes it entirely in your browser.
 - **🗣️ Voice-First Interaction**: Hands-free experience using Web Speech API. The AI speaks to you, and you speak back.
 - **📝 Real-Time Captions**: See exactly what the AI hears as you speak with live confidence monitoring.
 - **🤖 Dual AI Engine**: Support for both **Google Gemini** (Flash/Pro) and **OpenAI GPT-4**.
