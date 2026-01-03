@@ -5,7 +5,7 @@
 Interview Guru is a modern, voice-interactive web application that simulates a real job interview. Upload your resume, and our AI agent will generate context-aware questions, listen to your spoken answers, and provide a comprehensive hiring report with actionable feedback.
 
 ![Project Status](https://img.shields.io/badge/Status-Active-success)
-![License](https://img.shields.io/badge/License-MIT-blue)
+
 
 ## ✨ Features
 
